@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#060810">
+<title>VIRAL HUB — Discover What's Going Viral</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#060810;--bg2:#090c14;--surface:#0d1120;--card:#111520;--card2:#161c2e;--card3:#1c2338;--border:rgba(255,255,255,.055);--border2:rgba(255,255,255,.11);--border3:rgba(255,255,255,.18);--red:#ff3820;--orange:#ff6a00;--purple:#8b5cf6;--cyan:#06d6fa;--green:#10ef6c;--yellow:#ffd60a;--text:#eef0f8;--text2:#a8b0c8;--text3:#5c6480;--glow-r:rgba(255,56,32,.5);--glow-p:rgba(139,92,246,.4);--glow-c:rgba(6,214,250,.35);--r:14px;--r2:20px;--r3:28px;--nh:68px;--fd:'Bebas Neue',sans-serif;--fb:'Outfit',sans-serif;--fm:'JetBrains Mono',monospace}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);overflow-x:hidden;-webkit-font-smoothing:antialiased;cursor:none}
+@media(hover:none){body{cursor:auto}}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--red);border-radius:2px}
+::selection{background:rgba(255,56,32,.3);color:var(--text)}
+a{text-decoration:none;color:inherit}button{font-family:var(--fb)}
+.cur-dot,.cur-ring{position:fixed;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);border-radius:50%}
+.cur-dot{width:8px;height:8px;background:var(--red);box-shadow:0 0 12px var(--glow-r)}
+.cur-ring{width:32px;height:32px;border:1.5px solid rgba(255,56,32,.5);transition:width .18s,height .18s,border-color .2s}
+.cur-ring.grow{width:56px;height:56px;border-color:var(--cyan)}
+@media(hover:none){.cur-dot,.cur-ring{display:none}}
+.loader{position:fixed;inset:0;z-index:99998;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity .7s,visibility .7s}
+.loader.out{opacity:0;visibility:hidden}
+.loader-wm{font-family:var(--fd);font-size:clamp(48px,10vw,88px);letter-spacing:6px;background:linear-gradient(135deg,var(--red),var(--purple),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:lw .9s cubic-bezier(.16,1,.3,1) forwards}
+@keyframes lw{from{opacity:0;letter-spacing:28px;filter:blur(12px)}to{opacity:1;letter-spacing:6px;filter:blur(0)}}
+.loader-line{width:clamp(160px,40vw,240px);height:2px;background:var(--card3);border-radius:2px;overflow:hidden}
+.loader-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--cyan));animation:lf 1.6s cubic-bezier(.4,0,.2,1) forwards;width:0}
+@keyframes lf{to{width:100%}}
+.loader-tag{font-family:var(--fm);font-size:10px;color:var(--text3);letter-spacing:3px;text-transform:uppercase;animation:fu .5s .5s both}
+.toast{position:fixed;bottom:24px;right:24px;z-index:9000;max-width:320px;padding:13px 18px 13px 14px;background:var(--card2);border:1px solid rgba(16,239,108,.3);border-radius:var(--r);font-size:13px;font-weight:500;color:var(--green);display:flex;align-items:center;gap:10px;box-shadow:0 12px 40px rgba(0,0,0,.5);transform:translateY(24px) scale(.97);opacity:0;transition:all .38s cubic-bezier(.16,1,.3,1);pointer-events:none}
+.toast.show{transform:none;opacity:1}
+.nav{position:fixed;top:0;left:0;right:0;height:var(--nh);z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(14px,4vw,48px);backdrop-filter:blur(28px) saturate(200%);-webkit-backdrop-filter:blur(28px) saturate(200%);background:rgba(6,8,16,.72);border-bottom:1px solid var(--border);transition:background .3s,box-shadow .3s}
+.nav.solid{background:rgba(6,8,16,.97);box-shadow:0 1px 0 var(--border),0 8px 32px rgba(0,0,0,.4)}
+.nav-logo{display:flex;align-items:center;gap:10px;font-family:var(--fd);font-size:24px;letter-spacing:3px;flex-shrink:0}
+.nav-logo-icon{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--red),var(--purple));display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 0 18px var(--glow-r);flex-shrink:0}
+.nav-logo-text{background:linear-gradient(90deg,#fff 30%,var(--text2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-logo-dot{-webkit-text-fill-color:var(--red);color:var(--red)}
+.nav-links{display:flex;gap:2px;list-style:none}
+.nav-links a{padding:7px 12px;border-radius:8px;font-size:13px;font-weight:500;color:var(--text2);transition:all .2s}
+.nav-links a:hover{background:rgba(255,255,255,.06);color:var(--text)}
+.nav-links a.act{background:rgba(255,56,32,.12);color:var(--red)}
+.nav-right{display:flex;align-items:center;gap:8px}
+.nav-search{display:flex;align-items:center;gap:7px;padding:7px 12px;background:var(--surface);border:1px solid var(--border2);border-radius:9px;cursor:pointer;font-size:12px;color:var(--text3);transition:all .2s}
+.nav-search:hover{border-color:var(--border3);color:var(--text2)}
+.nav-search kbd{padding:1px 5px;border-radius:4px;background:var(--card2);font-family:var(--fm);font-size:9px;color:var(--text3)}
+.nb{padding:8px 16px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .22s;white-space:nowrap}
+.nb-ghost{background:transparent;color:var(--text2);border:1px solid var(--border2)}
+.nb-ghost:hover{border-color:var(--border3);color:var(--text)}
+.nb-hot{background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;box-shadow:0 2px 18px var(--glow-r)}
+.nb-hot:hover{transform:translateY(-1px);box-shadow:0 4px 28px var(--glow-r)}
+.hbg{display:none;flex-direction:column;justify-content:center;gap:5px;padding:7px;cursor:pointer;border-radius:8px;background:transparent;border:none;transition:background .2s}
+.hbg:hover{background:var(--surface)}
+.hbg span{display:block;width:19px;height:2px;background:var(--text2);border-radius:2px;transition:all .3s cubic-bezier(.16,1,.3,1)}
+.hbg.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hbg.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+.hbg.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.drawer{position:fixed;top:var(--nh);left:0;right:0;background:rgba(6,8,16,.97);backdrop-filter:blur(28px);border-bottom:1px solid var(--border);padding:14px;z-index:999;transform:translateY(-110%);opacity:0;transition:transform .38s cubic-bezier(.16,1,.3,1),opacity .3s}
+.drawer.open{transform:translateY(0);opacity:1}
+.drawer-links{display:flex;flex-direction:column;gap:3px;margin-bottom:12px}
+.drawer-links a{padding:12px 14px;border-radius:var(--r);font-size:15px;font-weight:500;color:var(--text2);transition:all .2s}
+.drawer-links a:hover{background:rgba(255,56,32,.1);color:var(--text)}
+.drawer-act{display:flex;gap:8px}
+.drawer-act .nb{flex:1;text-align:center;padding:12px;border-radius:10px}
+.hero{position:relative;overflow:hidden;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:calc(var(--nh) + 60px) clamp(14px,5vw,60px) 80px;text-align:center}
+.hero-bg{position:absolute;inset:0;z-index:0;overflow:hidden}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px);background-size:52px 52px;animation:gd 30s linear infinite;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%)}
+@keyframes gd{0%{background-position:0 0,0 0}100%{background-position:52px 52px,52px 52px}}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none}
+.orb-a{width:clamp(300px,50vw,600px);height:clamp(300px,50vw,600px);background:radial-gradient(circle,rgba(255,56,32,.13),transparent 70%);top:-10%;left:-10%;animation:oa 12s ease-in-out infinite}
+.orb-b{width:clamp(250px,40vw,500px);height:clamp(250px,40vw,500px);background:radial-gradient(circle,rgba(139,92,246,.1),transparent 70%);bottom:0;right:-5%;animation:ob 10s ease-in-out infinite}
+.orb-c{width:clamp(200px,30vw,360px);height:clamp(200px,30vw,360px);background:radial-gradient(circle,rgba(6,214,250,.08),transparent 70%);top:40%;left:55%;animation:oc 8s ease-in-out infinite}
+@keyframes oa{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,-30px)}}
+@keyframes ob{0%,100%{transform:translate(0,0)}50%{transform:translate(-30px,40px)}}
+@keyframes oc{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.15)}}
+.hero-content{position:relative;z-index:1;max-width:920px;width:100%}
+.hero-pill{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:100px;border:1px solid rgba(255,56,32,.28);background:rgba(255,56,32,.07);font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:26px;animation:fu .7s .1s both}
+.pill-dot{width:6px;height:6px;background:var(--red);border-radius:50%;box-shadow:0 0 8px var(--glow-r);animation:bk 1.4s ease infinite}
+@keyframes bk{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.6)}}
+.hero-h1{font-family:var(--fd);font-size:clamp(60px,13vw,148px);line-height:.88;letter-spacing:-1px;animation:fu .7s .2s both}
+.hero-h1 .l1{display:block;color:var(--text)}
+.hero-h1 .l2{display:block;background:linear-gradient(105deg,var(--red) 0%,var(--purple) 45%,var(--cyan) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200%;animation:fu .7s .2s both,gs 5s ease-in-out infinite}
+@keyframes gs{0%,100%{background-position:0%}50%{background-position:100%}}
+.hero-sub{font-size:clamp(14px,2vw,18px);color:var(--text2);font-weight:300;max-width:540px;margin:22px auto 40px;line-height:1.75;animation:fu .7s .35s both}
+.hero-sub strong{color:var(--text);font-weight:600}
+.hero-cta{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;animation:fu .7s .45s both}
+.cta{padding:13px 28px;border-radius:11px;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border:none;transition:all .28s cubic-bezier(.16,1,.3,1);display:inline-flex;align-items:center;gap:8px}
+.cta-fire{background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;box-shadow:0 4px 28px var(--glow-r),inset 0 1px 0 rgba(255,255,255,.15)}
+.cta-fire:hover{transform:translateY(-3px);box-shadow:0 8px 40px var(--glow-r)}
+.cta-ghost{background:rgba(255,255,255,.04);color:var(--text);border:1px solid var(--border2);backdrop-filter:blur(8px)}
+.cta-ghost:hover{background:rgba(255,255,255,.08);border-color:var(--cyan);color:var(--cyan);transform:translateY(-3px)}
+.stats-row{margin-top:60px;display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;background:rgba(255,255,255,.015);backdrop-filter:blur(12px);animation:fu .7s .6s both}
+.sb{padding:20px 16px;text-align:center;border-right:1px solid var(--border);transition:background .3s;position:relative;overflow:hidden}
+.sb::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:40%;height:1px;background:linear-gradient(90deg,transparent,var(--red),transparent);opacity:0;transition:opacity .3s}
+.sb:last-child{border-right:none}
+.sb:hover{background:rgba(255,56,32,.04)}
+.sb:hover::after{opacity:1}
+.sn{font-family:var(--fd);font-size:clamp(26px,4vw,40px);letter-spacing:1px;background:linear-gradient(135deg,var(--red),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sl{font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-top:4px}
+.ticker-wrap{overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:11px 0;background:rgba(255,56,32,.03)}
+.ticker-track{display:flex;gap:40px;width:max-content;animation:ts 35s linear infinite}
+.ticker-track:hover{animation-play-state:paused}
+@keyframes ts{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ti{display:flex;align-items:center;gap:7px;font-family:var(--fm);font-size:10px;color:var(--text3);white-space:nowrap;letter-spacing:1.5px;text-transform:uppercase}
+.ts{color:var(--red);font-size:13px}
+.sw{max-width:1440px;margin:0 auto;padding:88px clamp(14px,5vw,60px)}
+.stag{display:flex;align-items:center;gap:10px;font-family:var(--fm);font-size:10px;color:var(--red);letter-spacing:3px;text-transform:uppercase;margin-bottom:13px}
+.stag::before{content:'//';opacity:.45}
+.stag::after{content:'';flex:1;max-width:60px;height:1px;background:linear-gradient(90deg,var(--red),transparent)}
+.stitle{font-family:var(--fd);font-size:clamp(34px,5.5vw,70px);letter-spacing:.5px;line-height:.92;margin-bottom:13px}
+.stitle em{font-style:normal;background:linear-gradient(135deg,var(--red),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sdesc{font-size:15px;color:var(--text2);max-width:440px;line-height:1.7}
+.fbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:32px}
+.fb{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:100px;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;border:1px solid var(--border2);background:transparent;color:var(--text3);cursor:pointer;transition:all .22s}
+.fb:hover{border-color:var(--border3);color:var(--text2);background:rgba(255,255,255,.04)}
+.fb.on{background:var(--red);color:#fff;border-color:var(--red);box-shadow:0 0 18px var(--glow-r)}
+.fb .bdg{padding:1px 5px;border-radius:100px;background:rgba(255,255,255,.15);font-size:9px}
+.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(276px,1fr));gap:16px}
+.lf{grid-column:1/-1;display:grid;grid-template-columns:1fr 400px;background:var(--card);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;transition:box-shadow .35s,transform .35s;position:relative}
+.lf::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--red),var(--purple),var(--cyan))}
+.lf:hover{box-shadow:0 24px 80px rgba(0,0,0,.5),0 0 0 1px rgba(255,56,32,.15);transform:translateY(-4px)}
+.fc-b{padding:36px 40px;display:flex;flex-direction:column;justify-content:space-between}
+.fc-tags{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.fct-v{padding:3px 11px;border-radius:100px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:rgba(255,56,32,.15);color:var(--red);border:1px solid rgba(255,56,32,.25)}
+.fct-c{padding:3px 11px;border-radius:100px;font-size:9px;font-weight:700;letter-spacing:1.5px;background:rgba(6,214,250,.1);color:var(--cyan);border:1px solid rgba(6,214,250,.2)}
+.fc-t{font-family:var(--fd);font-size:clamp(30px,3.5vw,50px);line-height:1;margin-bottom:12px}
+.fc-d{font-size:14px;color:var(--text2);line-height:1.6;max-width:400px;margin-bottom:24px}
+.fc-v{position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(255,56,32,.08),rgba(139,92,246,.12),rgba(6,214,250,.06));display:flex;align-items:center;justify-content:center;min-height:200px}
+.fc-vbg{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(255,56,32,.18),transparent 65%);animation:br 4s ease-in-out infinite}
+@keyframes br{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.15)}}
+.fc-vi{font-size:76px;position:relative;z-index:1}
+.lc{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;display:flex;flex-direction:column;cursor:pointer;transition:transform .32s cubic-bezier(.16,1,.3,1),box-shadow .32s,border-color .2s;position:relative}
+.lc::after{content:'';position:absolute;inset:0;border-radius:var(--r2);background:linear-gradient(135deg,rgba(255,56,32,.04),transparent);opacity:0;transition:opacity .25s}
+.lc:hover{transform:translateY(-6px);border-color:rgba(255,56,32,.22);box-shadow:0 18px 50px rgba(0,0,0,.45)}
+.lc:hover::after{opacity:1}
+.lt{position:relative;width:100%;height:172px;overflow:hidden;background:var(--card2);flex-shrink:0}
+.lt img{width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.16,1,.3,1)}
+.lc:hover .lt img{transform:scale(1.07)}
+.ltp{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:42px}
+.lto{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(9,12,20,.9))}
+.lcat{position:absolute;top:10px;left:10px;z-index:2;padding:3px 10px;border-radius:100px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase}
+.ct{background:rgba(139,92,246,.85);color:#fff}
+.cf{background:rgba(6,214,250,.85);color:#000}
+.ch{background:rgba(255,56,32,.85);color:#fff}
+.cm{background:rgba(16,239,108,.85);color:#000}
+.ca{background:rgba(139,92,246,.9);color:#fff}
+.lhb{position:absolute;bottom:8px;right:8px;z-index:2;display:flex;align-items:center;gap:4px;padding:2px 7px;border-radius:5px;background:rgba(0,0,0,.65);backdrop-filter:blur(8px);font-family:var(--fm);font-size:9px;color:#fff}
+.lb{padding:16px 18px 18px;flex:1;display:flex;flex-direction:column}
+.lt2{font-size:15px;font-weight:600;line-height:1.35;margin-bottom:5px}
+.lby{font-size:11px;color:var(--text3);margin-bottom:auto;padding-bottom:14px}
+.lfoot{display:flex;align-items:center;justify-content:space-between}
+.lm{display:flex;align-items:center;gap:6px;font-family:var(--fm);font-size:11px;color:var(--red)}
+.cbtn{padding:6px 15px;border-radius:7px;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;background:linear-gradient(135deg,var(--purple),var(--cyan));color:#fff;border:none;cursor:pointer;transition:all .22s;box-shadow:0 2px 14px rgba(139,92,246,.3)}
+.cbtn:hover{transform:scale(1.06);box-shadow:0 4px 22px rgba(139,92,246,.5)}
+.cbtn.done{background:linear-gradient(135deg,var(--green),#00c05a);color:#000}
+.ict{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-top:36px}
+.icc{position:relative;border-radius:var(--r2);overflow:hidden;cursor:pointer;aspect-ratio:3/4;transition:transform .3s cubic-bezier(.16,1,.3,1),box-shadow .3s;border:1px solid var(--border)}
+.icc:hover{transform:translateY(-6px) scale(1.02);box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.icbg{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px;position:relative}
+.icbg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.65}
+. ico{position:absolute;inset:0;background:linear-gradient(to top,rgba(6,8,16,.95) 0%,rgba(6,8,16,.3) 60%,transparent 100%)}
+.icl{position:absolute;bottom:12px;left:0;right:0;text-align:center;font-family:var(--fd);font-size:14px;letter-spacing:2px;z-index:2}
+.icc2{position:absolute;top:8px;right:8px;padding:2px 7px;border-radius:100px;font-family:var(--fm);font-size:9px;letter-spacing:1px;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);color:var(--text2);z-index:2}
+.ag{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;margin-top:40px}
+.ac{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:20px 18px;cursor:pointer;transition:all .3s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column;position:relative;overflow:hidden}
+.ac::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;opacity:0;transition:opacity .25s}
+.ac.at::before{background:linear-gradient(90deg,var(--purple),var(--cyan))}
+.ac.af::before{background:linear-gradient(90deg,var(--cyan),var(--green))}
+.ac.ah::before{background:linear-gradient(90deg,var(--red),var(--orange))}
+.ac.am::before{background:linear-gradient(90deg,var(--green),var(--cyan))}
+.ac.aa::before{background:linear-gradient(90deg,var(--purple),var(--red))}
+.ac:hover{transform:translateY(-5px);border-color:var(--border3);box-shadow:0 16px 48px rgba(0,0,0,.4)}
+.ac:hover::before{opacity:1}
+.ai{width:50px;height:50px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:14px;flex-shrink:0}
+.ai.it{background:linear-gradient(135deg,rgba(139,92,246,.2),rgba(6,214,250,.15));border:1px solid rgba(139,92,246,.25)}
+.ai.if{background:linear-gradient(135deg,rgba(6,214,250,.2),rgba(16,239,108,.15));border:1px solid rgba(6,214,250,.25)}
+.ai.ih{background:linear-gradient(135deg,rgba(255,56,32,.2),rgba(255,106,0,.15));border:1px solid rgba(255,56,32,.25)}
+.ai.im{background:linear-gradient(135deg,rgba(16,239,108,.2),rgba(6,214,250,.15));border:1px solid rgba(16,239,108,.25)}
+.ai.ia{background:linear-gradient(135deg,rgba(139,92,246,.2),rgba(255,56,32,.15));border:1px solid rgba(139,92,246,.25)}
+.an{font-size:14px;font-weight:600;margin-bottom:5px}
+.ad{font-size:12px;color:var(--text2);line-height:1.55;margin-bottom:16px;flex:1}
+.ar{display:flex;align-items:center;gap:3px;font-size:11px;color:var(--yellow);margin-bottom:12px}
+.afoot{display:flex;align-items:center;justify-content:space-between}
+.act{font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:3px 8px;border-radius:100px}
+.act.tt{background:rgba(139,92,246,.15);color:var(--purple)}
+.act.tf{background:rgba(6,214,250,.12);color:var(--cyan)}
+.act.th{background:rgba(255,56,32,.12);color:var(--red)}
+.act.tm{background:rgba(16,239,108,.12);color:var(--green)}
+.act.ta{background:rgba(139,92,246,.15);color:var(--purple)}
+.aop{padding:5px 12px;border-radius:7px;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all .2s}
+.aop:hover{background:rgba(255,255,255,.07);color:var(--text);border-color:var(--border3)}
+.vg{display:grid;grid-template-columns:repeat(auto-fill,minmax(252px,1fr));gap:16px}
+.vc{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;cursor:pointer;transition:transform .3s cubic-bezier(.16,1,.3,1),box-shadow .3s,border-color .2s}
+.vc:hover{transform:translateY(-5px);border-color:rgba(255,106,0,.3);box-shadow:0 16px 45px rgba(0,0,0,.45)}
+.vt{position:relative;height:158px;background:var(--card2);overflow:hidden}
+.vt img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.vc:hover .vt img{transform:scale(1.08)}
+.vtp{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:38px}
+.vov{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 25%,rgba(0,0,0,.75))}
+.vpl{position:absolute;z-index:2;top:50%;left:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;background:rgba(255,56,32,.9);display:flex;align-items:center;justify-content:center;font-size:17px;padding-left:3px;box-shadow:0 4px 24px var(--glow-r);transition:transform .22s}
+.vc:hover .vpl{transform:translate(-50%,-50%) scale(1.14)}
+.vpl-tag{position:absolute;top:9px;right:9px;z-index:3;background:#ff0000;color:#fff;font-size:8px;font-weight:700;padding:2px 6px;border-radius:3px;letter-spacing:1px}
+.vdur{position:absolute;bottom:9px;right:9px;z-index:3;background:rgba(0,0,0,.75);color:#fff;font-family:var(--fm);font-size:9px;padding:2px 6px;border-radius:4px}
+.vb{padding:14px 16px 16px}
+.vti{font-size:13px;font-weight:600;line-height:1.4;margin-bottom:9px}
+.vmeta{display:flex;justify-content:space-between;align-items:center}
+.vau{font-size:11px;color:var(--text3)}
+.vvw{font-size:11px;color:var(--text2)}
+.pw{display:grid;grid-template-columns:320px 1fr;gap:24px;margin-top:44px}
+.pcard{background:var(--card);border:1px solid var(--border);border-radius:var(--r3);padding:28px 24px;position:relative;overflow:hidden}
+.pcard::before{content:'';position:absolute;top:0;left:0;right:0;height:76px;background:linear-gradient(135deg,rgba(255,56,32,.08),rgba(139,92,246,.08))}
+.par-wrap{position:relative;width:76px;height:76px;margin-bottom:16px;z-index:1}
+.par-wrap::before{content:'';position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(var(--red),var(--purple),var(--cyan),var(--red));animation:rr 4s linear infinite}
+@keyframes rr{to{transform:rotate(360deg)}}
+.par{position:relative;z-index:1;width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,rgba(255,56,32,.6),rgba(139,92,246,.6));display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:30px;color:#fff;border:3px solid var(--bg);box-shadow:0 0 0 3px var(--bg)}
+.pname{font-family:var(--fd);font-size:28px;letter-spacing:1px;margin-bottom:3px;z-index:1;position:relative}
+.phandle{font-family:var(--fm);font-size:11px;color:var(--red);margin-bottom:18px;z-index:1;position:relative}
+.pbadge{display:inline-flex;align-items:center;gap:7px;padding:7px 14px;border-radius:9px;background:rgba(16,239,108,.07);border:1px solid rgba(16,239,108,.18);font-family:var(--fm);font-size:12px;color:var(--green);margin-bottom:22px}
+.psg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.psb{background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:13px;text-align:center}
+.psn{font-family:var(--fd);font-size:24px;color:var(--red)}
+.psl{font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px}
+.pr{display:flex;flex-direction:column;gap:18px}
+.pp{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:22px 24px;flex:1}
+.pp-t{font-family:var(--fm);font-size:10px;color:var(--text3);letter-spacing:3px;text-transform:uppercase;margin-bottom:16px}
+.nr{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--border)}
+.nr:last-of-type{border-bottom:none;padding-bottom:0}
+.nl{font-size:14px;font-weight:500;margin-bottom:2px}
+.ns{font-size:11px;color:var(--text3)}
+.tog{flex-shrink:0;width:44px;height:24px;border-radius:12px;background:var(--card3);border:1px solid var(--border2);position:relative;cursor:pointer;transition:background .3s,border-color .3s}
+.tog.on{background:var(--cyan);border-color:var(--cyan);box-shadow:0 0 14px var(--glow-c)}
+.tok{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 6px rgba(0,0,0,.3);transition:transform .3s cubic-bezier(.16,1,.3,1)}
+.tog.on .tok{transform:translateX(20px)}
+.arow{display:flex;gap:7px;flex-wrap:wrap}
+.tc{padding:7px 16px;border-radius:9px;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;border:1px solid var(--border2);background:transparent;color:var(--text3);cursor:pointer;transition:all .2s}
+.tc.on{background:linear-gradient(135deg,var(--purple),var(--cyan));color:#fff;border-color:transparent;box-shadow:0 0 18px var(--glow-p)}
+.tc:hover:not(.on){border-color:var(--border3);color:var(--text2)}
+.sub-block{position:relative;overflow:hidden;background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.sub-in{max-width:1440px;margin:0 auto;padding:88px clamp(14px,5vw,60px);display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.sub-orb{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,.07),transparent 65%);top:-100px;right:-100px;pointer-events:none}
+.sf{display:flex;flex-direction:column;gap:11px}
+.frow{display:flex;gap:9px}
+.si{flex:1;padding:14px 16px;background:var(--card);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-family:var(--fb);font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s}
+.si:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(255,56,32,.1)}
+.si::placeholder{color:var(--text3)}
+.ss{padding:14px 16px;background:var(--card);border:1px solid var(--border2);border-radius:var(--r);color:var(--text2);font-family:var(--fb);font-size:14px;outline:none;cursor:pointer;transition:border-color .2s;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%235c6480' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:34px}
+.ss:focus{border-color:var(--red)}
+.sbtn{width:100%;padding:15px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;border:none;border-radius:var(--r);font-family:var(--fb);font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .28s;box-shadow:0 4px 28px var(--glow-r);display:flex;align-items:center;justify-content:center;gap:8px}
+.sbtn:hover{transform:translateY(-2px);box-shadow:0 8px 40px var(--glow-r)}
+.dlg{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:44px}
+.dlc{background:var(--card);border:1px solid var(--border);border-radius:var(--r3);padding:36px 32px;position:relative;overflow:hidden;transition:transform .3s cubic-bezier(.16,1,.3,1),box-shadow .3s}
+.dlc::after{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.dlc.and::after{background:linear-gradient(90deg,#2ECC40,var(--cyan))}
+.dlc.ios::after{background:linear-gradient(90deg,#007aff,var(--purple))}
+.dlc:hover{transform:translateY(-5px);box-shadow:0 22px 60px rgba(0,0,0,.4)}
+.dlir{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.dlicon{font-size:42px}
+.dlbadge{padding:3px 11px;border-radius:100px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase}
+.dlbadge.and{background:rgba(46,204,64,.12);color:#2ECC40;border:1px solid rgba(46,204,64,.2)}
+.dlbadge.ios{background:rgba(0,122,255,.12);color:#007aff;border:1px solid rgba(0,122,255,.2)}
+.dlti{font-family:var(--fd);font-size:32px;letter-spacing:1px;margin-bottom:9px}
+.dld{font-size:14px;color:var(--text2);line-height:1.65;margin-bottom:22px}
+.dlfs{display:flex;flex-direction:column;gap:7px;margin-bottom:24px}
+.dlf{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--text2)}
+.dlf .ck{color:var(--green);font-size:13px}
+.dlb{width:100%;padding:15px;border:none;border-radius:var(--r);font-family:var(--fb);font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .28s;display:flex;align-items:center;justify-content:center;gap:9px}
+.dlb.and{background:linear-gradient(135deg,#2ECC40,#01d27b);color:#000;box-shadow:0 4px 24px rgba(46,204,64,.3)}
+.dlb.ios{background:linear-gradient(135deg,#007aff,#5856d6);color:#fff;box-shadow:0 4px 24px rgba(0,122,255,.3)}
+.dlb:hover{transform:translateY(-2px);filter:brightness(1.08)}
+.vr{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
+.vc2{padding:3px 9px;border-radius:5px;font-family:var(--fm);font-size:9px;background:var(--card3);color:var(--text3);border:1px solid var(--border)}
+.footer{border-top:1px solid var(--border);background:var(--bg2)}
+.fi{max-width:1440px;margin:0 auto;padding:64px clamp(14px,5vw,60px) 44px}
+.ft{display:grid;grid-template-columns:2.5fr 1fr 1fr 1fr;gap:44px;margin-bottom:52px}
+.fbd{font-size:14px;color:var(--text2);line-height:1.7;max-width:290px;margin-top:12px}
+.fc h5{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--text3);margin-bottom:14px}
+.fc a{display:block;font-size:14px;color:var(--text2);margin-bottom:10px;transition:color .2s}
+.fc a:hover{color:var(--text)}
+.fbot{border-top:1px solid var(--border);padding-top:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px}
+.fbot p{font-size:12px;color:var(--text3)}
+.socs{display:flex;gap:7px}
+.soc{width:34px;height:34px;border-radius:8px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;transition:all .22s;color:var(--text2)}
+.soc:hover{border-color:var(--red);box-shadow:0 0 14px var(--glow-r);transform:translateY(-2px);color:var(--text)}
+.sr{opacity:0;transform:translateY(34px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+.sr.vis{opacity:1;transform:none}
+.sr.d1{transition-delay:.1s}.sr.d2{transition-delay:.2s}.sr.d3{transition-delay:.3s}.sr.d4{transition-delay:.4s}
+@keyframes fu{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+.bg-alt{background:var(--bg2)}
+@media(max-width:900px){
+  :root{--nh:60px}
+  .nav-links,.nav-search,.nb-ghost{display:none}
+  .hbg{display:flex}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .lf{grid-template-columns:1fr}
+  .fc-v{height:180px}
+  .pw{grid-template-columns:1fr}
+  .sub-in{grid-template-columns:1fr;gap:36px}
+  .dlg{grid-template-columns:1fr}
+  .ft{grid-template-columns:1fr 1fr;gap:28px}
+  .ag{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}
+}
+@media(max-width:600px){
+  .g{grid-template-columns:1fr}
+  .lf{grid-template-columns:1fr}
+  .vg{grid-template-columns:1fr}
+  .ict{grid-template-columns:repeat(3,1fr)}
+  .ag{grid-template-columns:repeat(2,1fr)}
+  .dlg{grid-template-columns:1fr}
+  .ft{grid-template-columns:1fr}
+  .sw{padding:60px 14px}
+  .fc-b{padding:22px 18px}
+  .frow{flex-direction:column}
+  .dlc{padding:26px 20px}
+  .sub-in{padding:64px 14px}
+}
+@media(max-width:380px){
+  .ict{grid-template-columns:repeat(2,1fr)}
+  .ag{grid-template-columns:1fr}
+  .hero-cta{flex-direction:column}
+  .cta{justify-content:center}
+}
+</style>
+</head>
+<body>
+<div class="loader" id="loader"><div class="loader-wm">VIRAL HUB</div><div class="loader-line"><div class="loader-fill"></div></div><div class="loader-tag">Loading viral content...</div></div>
+<div class="cur-dot" id="cd"></div>
+<div class="cur-ring" id="cr"></div>
+<div class="toast" id="toast"><span id="ti">✓</span><span id="tm">Done!</span></div>
+
+<nav class="nav" id="nav">
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-icon">🔥</div>
+    <span class="nav-logo-text">VIRAL<span class="nav-logo-dot">.</span>HUB</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#links" class="act">Links</a></li>
+    <li><a href="#catalogue">Catalogue</a></li>
+    <li><a href="#videos">Videos</a></li>
+    <li><a href="#profile">Profile</a></li>
+    <li><a href="#download">Download</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="nav-search">🔍 Search <kbd>⌘K</kbd></div>
+    <button class="nb nb-ghost">Sign In</button>
+    <button class="nb nb-hot">🔥 Join Free</button>
+    <button class="hbg" id="hbg"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="drawer" id="drw">
+  <div class="drawer-links">
+    <a href="#links">🔗 Links</a>
+    <a href="#catalogue">📦 App Catalogue</a>
+    <a href="#videos">🎬 Videos</a>
+    <a href="#profile">👤 Profile</a>
+    <a href="#download">📱 Download</a>
+  </div>
+  <div class="drawer-act">
+    <button class="nb nb-ghost" style="flex:1;padding:11px;border-radius:10px">Sign In</button>
+    <button class="nb nb-hot" style="flex:1;padding:11px;border-radius:10px">🔥 Join Free</button>
+  </div>
+</div>
+
+<section class="hero">
+  <div class="hero-bg"><div class="hero-grid"></div><div class="orb orb-a"></div><div class="orb orb-b"></div><div class="orb orb-c"></div></div>
+  <div class="hero-content">
+    <div class="hero-pill"><span class="pill-dot"></span>🔥 Weekly Viral Drop #47 — Now Live</div>
+    <h1 class="hero-h1"><span class="l1">DISCOVER</span><span class="l2">VIRAL HUB</span></h1>
+    <p class="hero-sub">The ultimate platform for <strong>viral tools, free apps, hacking resources, movies</strong> and trending content — curated weekly by the community.</p>
+    <div class="hero-cta">
+      <a href="#links" class="cta cta-fire">🔥 Explore Links</a>
+      <a href="#catalogue" class="cta cta-ghost">📦 Catalogue</a>
+      <a href="#download" class="cta cta-ghost">📱 Get App</a>
+    </div>
+    <div class="stats-row">
+      <div class="sb"><div class="sn" data-to="2400">0</div><div class="sl">Link Cards</div></div>
+      <div class="sb"><div class="sn" data-to="89000">0</div><div class="sl">Active Users</div></div>
+      <div class="sb"><div class="sn" data-to="47">0</div><div class="sl">Weekly Drops</div></div>
+      <div class="sb"><div class="sn" data-to="100">0</div><div class="sl">% Free</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="ticker-wrap">
+  <div class="ticker-track">
+    <span class="ti"><span class="ts">🔥</span>THINK-POL OSINT</span>
+    <span class="ti"><span class="ts">⚡</span>TRADING FREE APP SAHI</span>
+    <span class="ti"><span class="ts">🎯</span>TELEGRAM POSTS SEARCH</span>
+    <span class="ti"><span class="ts">📺</span>FREE CLARO TV</span>
+    <span class="ti"><span class="ts">🎬</span>FMOVIES</span>
+    <span class="ti"><span class="ts">🚀</span>SECRET SEO TRICKS</span>
+    <span class="ti"><span class="ts">🔓</span>OSINT CONSULTANTS</span>
+    <span class="ti"><span class="ts">💎</span>VIRAL HACKS 2026</span>
+    <span class="ti"><span class="ts">🌐</span>VIRALNODE WEEKLY</span>
+    <span class="ti"><span class="ts">🔥</span>THINK-POL OSINT</span>
+    <span class="ti"><span class="ts">⚡</span>TRADING FREE APP SAHI</span>
+    <span class="ti"><span class="ts">🎯</span>TELEGRAM POSTS SEARCH</span>
+    <span class="ti"><span class="ts">📺</span>FREE CLARO TV</span>
+    <span class="ti"><span class="ts">🎬</span>FMOVIES</span>
+    <span class="ti"><span class="ts">🚀</span>SECRET SEO TRICKS</span>
+    <span class="ti"><span class="ts">🔓</span>OSINT CONSULTANTS</span>
+    <span class="ti"><span class="ts">💎</span>VIRAL HACKS 2026</span>
+    <span class="ti"><span class="ts">🌐</span>VIRALNODE WEEKLY</span>
+  </div>
+</div>
+
+<!-- LINK CARDS -->
+<section class="sw" id="links">
+  <div class="sr" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;margin-bottom:10px">
+    <div><div class="stag">Link Cards</div><h2 class="stitle">TRENDING <em>NOW</em></h2><p class="sdesc">Handpicked viral links — refreshed every week.</p></div>
+  </div>
+  <div class="fbar sr d1">
+    <button class="fb on" onclick="filt('all',this)">ALL <span class="bdg">48</span></button>
+    <button class="fb" onclick="filt('tools',this)">🛠 Tools <span class="bdg">12</span></button>
+    <button class="fb" onclick="filt('free_apps',this)">🆓 Free Apps <span class="bdg">9</span></button>
+    <button class="fb" onclick="filt('hacks',this)">⚡ Hacks <span class="bdg">11</span></button>
+    <button class="fb" onclick="filt('movies',this)">🎬 Movies <span class="bdg">7</span></button>
+    <button class="fb" onclick="filt('ai',this)">🤖 AI <span class="bdg">9</span></button>
+  </div>
+  <div class="g" id="cg">
+    <div class="lf sr d1" data-cat="tools"><div class="fc-b"><div><div class="fc-tags"><span class="fct-v">🔥 Most Viral</span><span class="fct-c">👁 128 copies</span></div><div class="fc-t">THINK-POL OSINT</div><p class="fc-d">Advanced open-source intelligence toolkit. Find anything, track patterns, uncover connections — the most viral tool this week on ViralNode.</p></div><div class="lfoot" style="margin-top:18px"><div class="lm">🔥 128</div><button class="cbtn" onclick="cp(this,'https://think-pol.in/osint')">COPY LINK</button></div></div><div class="fc-v"><div class="fc-vbg"></div><div class="fc-vi">🔍</div></div></div>
+    <div class="lc sr d1" data-cat="free_apps"><div class="lt"><div class="ltp" style="background:linear-gradient(135deg,#001800,#003d00)">📈</div><div class="lto"></div><div class="lcat cf">FREE_APPS</div><div class="lhb">🔥 1</div></div><div class="lb"><div class="lt2">Trading Free App Sahi</div><div class="lby">by Admin</div><div class="lfoot"><div class="lm">📈 Trading</div><button class="cbtn" onclick="cp(this,'https://sahi.trading/free')">COPY</button></div></div></div>
+    <div class="lc sr d2" data-cat="tools"><div class="lt"><div class="ltp" style="background:linear-gradient(135deg,#050518,#10083a)">🌐</div><div class="lto"></div><div class="lcat ct">TOOLS</div><div class="lhb">🔥 1</div></div><div class="lb"><div class="lt2">Telegram Posts Search</div><div class="lby">by Admin</div><div class="lfoot"><div class="lm">🔍 OSINT</div><button class="cbtn" onclick="cp(this,'https://osintconsultants.com/telegram')">COPY</button></div></div></div>
+    <div class="lc sr d3" data-cat="hacks"><div class="lt"><div class="ltp" style="background:linear-gradient(135deg,#1a0300,#3d0800)">📡</div><div class="lto"></div><div class="lcat ch">VIRAL_HACKS</div><div class="lhb">🔥 1</div></div><div class="lb"><div class="lt2">Television Free Claro Vision</div><div class="lby">by Admin</div><div class="lfoot"><div class="lm">📺 TV</div><button class="cbtn" onclick="cp(this,'https://claro.tv/free')">COPY</button></div></div></div>
+    <div class="lc sr d1" data-cat="movies"><div class="lt"><div class="ltp" style="background:linear-gradient(135deg,#001a08,#003d14)">🎬</div><div class="lto"></div><div class="lcat cm">MOVIES</div><div class="lhb">🔥 94</div></div><div class="lb"><div class="lt2">FMovies — Watch Free Online</div><div class="lby">by Admin</div><div class="lfoot"><div class="lm">🎥 Stream</div><button class="cbtn" onclick="cp(this,'https://fmovies.ps')">COPY</button></div></div></div>
+    <div class="lc sr d2" data-cat="ai"><div class="lt"><div class="ltp" style="background:linear-gradient(135deg,#080018,#200060)">🤖</div><div class="lto"></div><div class="lcat ca">AI TOOLS</div><div class="lhb">🔥 67</div></div><div class="lb"><div class="lt2">AI Image Generator Pro</div><div class="lby">by Admin</div><div class="lfoot"><div class="lm">🤖 AI</div><button class="cbtn" onclick="cp(this,'https://ai.viralhub.app')">COPY</button></div></div></div>
+    <div class="lc sr d3" data-cat="tools"><div class="lt"><div class="ltp" style="background:linear-gradient(135deg,#001818,#003d3d)">🕵️</div><div class="lto"></div><div class="lcat ct">TOOLS</div><div class="lhb">🔥 42</div></div><div class="lb"><div class="lt2">OSINT Consultants Toolkit</div><div class="lby">by Admin</div><div class="lfoot"><div class="lm">🔍 OSINT</div><button class="cbtn" onclick="cp(this,'https://osintconsultants.com')">COPY</button></div></div></div>
+    <div class="lc sr d1" data-cat="hacks"><div class="lt"><div class="ltp" style="background:linear-gradient(135deg,#1a0800,#4a2000)">⚡</div><div class="lto"></div><div class="lcat ch">VIRAL_HACKS</div><div class="lhb">🔥 58</div></div><div class="lb"><div class="lt2">1Hack — Together We Learn</div><div class="lby">by Admin</div><div class="lfoot"><div class="lm">⚡ Hack</div><button class="cbtn" onclick="cp(this,'https://1hack.us')">COPY</button></div></div></div>
+    <div class="lc sr d2" data-cat="free_apps"><div class="lt"><div class="ltp" style="background:linear-gradient(135deg,#001418,#002d38)">🎵</div><div class="lto"></div><div class="lcat cf">FREE_APPS</div><div class="lhb">🔥 33</div></div><div class="lb"><div class="lt2">Spotify Premium Free Bypass</div><div class="lby">by Admin</div><div class="lfoot"><div class="lm">🎵 Music</div><button class="cbtn" onclick="cp(this,'https://spotify.viralhub.app')">COPY</button></div></div></div>
+  </div>
+</section>
+
+<!-- IMAGE CATEGORY TYPES -->
+<div class="bg-alt" style="border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+<div class="sw">
+  <div class="sr"><div class="stag">Browse by Type</div><h2 class="stitle">CONTENT <em>TYPES</em></h2><p class="sdesc">All categories of viral content — tap to explore.</p></div>
+  <div class="ict">
+    <div class="icc sr d1" onclick="filt('tools',document.querySelectorAll('.fb')[1])"><div class="icbg" style="background:linear-gradient(135deg,#0a0520,#1a0a44)">🛠</div><div class="ico"></div><span class="icc2">12</span><div class="icl">TOOLS</div></div>
+    <div class="icc sr d2" onclick="filt('free_apps',document.querySelectorAll('.fb')[2])"><div class="icbg" style="background:linear-gradient(135deg,#001a10,#003d22)">🆓</div><div class="ico"></div><span class="icc2">9</span><div class="icl">FREE APPS</div></div>
+    <div class="icc sr d3" onclick="filt('hacks',document.querySelectorAll('.fb')[3])"><div class="icbg" style="background:linear-gradient(135deg,#1a0400,#3d0c00)">⚡</div><div class="ico"></div><span class="icc2">11</span><div class="icl">HACKS</div></div>
+    <div class="icc sr d4" onclick="filt('movies',document.querySelectorAll('.fb')[4])"><div class="icbg" style="background:linear-gradient(135deg,#001806,#003d10)">🎬</div><div class="ico"></div><span class="icc2">7</span><div class="icl">MOVIES</div></div>
+    <div class="icc sr d1" onclick="filt('ai',document.querySelectorAll('.fb')[5])"><div class="icbg" style="background:linear-gradient(135deg,#060018,#160040)">🤖</div><div class="ico"></div><span class="icc2">9</span><div class="icl">AI TOOLS</div></div>
+    <div class="icc sr d2"><div class="icbg" style="background:linear-gradient(135deg,#181000,#3d2800)">📰</div><div class="ico"></div><span class="icc2">6</span><div class="icl">NEWS</div></div>
+    <div class="icc sr d3"><div class="icbg" style="background:linear-gradient(135deg,#001a1a,#00383d)">🔐</div><div class="ico"></div><span class="icc2">14</span><div class="icl">SECURITY</div></div>
+    <div class="icc sr d4"><div class="icbg" style="background:linear-gradient(135deg,#0a1a00,#1e3d00)">💰</div><div class="ico"></div><span class="icc2">8</span><div class="icl">MONEY</div></div>
+  </div>
+</div>
+</div>
+
+<!-- APP CATALOGUE -->
+<section class="sw" id="catalogue">
+  <div class="sr"><div class="stag">App Catalogue</div><h2 class="stitle">ALL <em>APPS</em></h2><p class="sdesc">Full catalogue of free tools & apps — handpicked and working.</p></div>
+  <div class="ag">
+    <div class="ac at sr d1"><div class="ai it">🔍</div><div class="an">Think-Pol OSINT</div><div class="ad">Open-source intelligence toolkit for tracking patterns and connections.</div><div class="ar">★★★★★ <span style="color:var(--text3);margin-left:4px">5.0</span></div><div class="afoot"><span class="act tt">TOOLS</span><button class="aop" onclick="toast('Opening Think-Pol OSINT...')">Open →</button></div></div>
+    <div class="ac af sr d2"><div class="ai if">📈</div><div class="an">Trading App Sahi</div><div class="ad">Free trading platform with real-time charts and signals.</div><div class="ar">★★★★☆ <span style="color:var(--text3);margin-left:4px">4.2</span></div><div class="afoot"><span class="act tf">FREE APP</span><button class="aop" onclick="toast('Opening Trading App Sahi...')">Open →</button></div></div>
+    <div class="ac ah sr d3"><div class="ai ih">⚡</div><div class="an">1Hack Platform</div><div class="ad">Community hacking education — together we learn, together we grow.</div><div class="ar">★★★★★ <span style="color:var(--text3);margin-left:4px">4.8</span></div><div class="afoot"><span class="act th">HACKS</span><button class="aop" onclick="toast('Opening 1Hack...')">Open →</button></div></div>
+    <div class="ac am sr d4"><div class="ai im">🎬</div><div class="an">FMovies</div><div class="ad">Stream thousands of movies and series for free — no account needed.</div><div class="ar">★★★★☆ <span style="color:var(--text3);margin-left:4px">4.4</span></div><div class="afoot"><span class="act tm">MOVIES</span><button class="aop" onclick="toast('Opening FMovies...')">Open →</button></div></div>
+    <div class="ac aa sr d1"><div class="ai ia">🤖</div><div class="an">AI Image Gen Pro</div><div class="ad">Generate stunning AI images for free — no limits, no watermarks.</div><div class="ar">★★★★★ <span style="color:var(--text3);margin-left:4px">5.0</span></div><div class="afoot"><span class="act ta">AI</span><button class="aop" onclick="toast('Opening AI Image Gen...')">Open →</button></div></div>
+    <div class="ac at sr d2"><div class="ai it">🕵️</div><div class="an">OSINT Consultants</div><div class="ad">Professional-grade tools for investigators and researchers.</div><div class="ar">★★★★☆ <span style="color:var(--text3);margin-left:4px">4.6</span></div><div class="afoot"><span class="act tt">TOOLS</span><button class="aop" onclick="toast('Opening OSINT Consultants...')">Open →</button></div></div>
+    <div class="ac af sr d3"><div class="ai if">🎵</div><div class="an">Spotify Free Mod</div><div class="ad">Unlock premium Spotify — no ads, offline play, unlimited skips.</div><div class="ar">★★★★☆ <span style="color:var(--text3);margin-left:4px">4.3</span></div><div class="afoot"><span class="act tf">FREE APP</span><button class="aop" onclick="toast('Opening Spotify Mod...')">Open →</button></div></div>
+    <div class="ac aa sr d4"><div class="ai ia">💬</div><div class="an">ChatGPT Unlocker</div><div class="ad">Access GPT-4 features — jailbreak prompts and custom personas.</div><div class="ar">★★★★★ <span style="color:var(--text3);margin-left:4px">4.9</span></div><div class="afoot"><span class="act ta">AI</span><button class="aop" onclick="toast('Opening ChatGPT Unlocker...')">Open →</button></div></div>
+    <div class="ac ah sr d1"><div class="ai ih">📡</div><div class="an">Claro TV Free</div><div class="ad">Watch hundreds of live TV channels — sports, news, movies.</div><div class="ar">★★★★☆ <span style="color:var(--text3);margin-left:4px">4.1</span></div><div class="afoot"><span class="act th">HACKS</span><button class="aop" onclick="toast('Opening Claro TV...')">Open →</button></div></div>
+    <div class="ac am sr d2"><div class="ai im">🍿</div><div class="an">123Movies HD</div><div class="ad">Full HD movie streaming — massive library updated daily.</div><div class="ar">★★★★☆ <span style="color:var(--text3);margin-left:4px">4.5</span></div><div class="afoot"><span class="act tm">MOVIES</span><button class="aop" onclick="toast('Opening 123Movies...')">Open →</button></div></div>
+    <div class="ac af sr d3"><div class="ai if">📺</div><div class="an">Netflix Bypass</div><div class="ad">Premium Netflix accounts — updated every 24 hours.</div><div class="ar">★★★★☆ <span style="color:var(--text3);margin-left:4px">4.0</span></div><div class="afoot"><span class="act tf">FREE APP</span><button class="aop" onclick="toast('Opening Netflix Bypass...')">Open →</button></div></div>
+    <div class="ac at sr d4"><div class="ai it">🔐</div><div class="an">Password Analyzer</div><div class="ad">Check password strength and data breach exposure instantly.</div><div class="ar">★★★★★ <span style="color:var(--text3);margin-left:4px">4.7</span></div><div class="afoot"><span class="act tt">TOOLS</span><button class="aop" onclick="toast('Opening Password Analyzer...')">Open →</button></div></div>
+  </div>
+</section>
+
+<!-- VIDEOS -->
+<div class="bg-alt" style="border-top:1px solid var(--border)">
+<section class="sw" id="videos">
+  <div class="sr"><div class="stag">Hacking Videos</div><h2 class="stitle">WATCH &amp; <em>LEARN</em></h2><p class="sdesc" style="margin-bottom:40px">Trending tutorials, hacks and educational content.</p></div>
+  <div class="vg">
+    <div class="vc sr d1"><div class="vt"><div class="vtp" style="background:linear-gradient(135deg,#1a0400,#3a0d00)">🚀</div><div class="vov"></div><div class="vpl">▶</div><div class="vpl-tag">YT</div><div class="vdur">8:42</div></div><div class="vb"><div class="lcat ch" style="position:static;display:inline-block;margin-bottom:9px">VIRAL_HACKS</div><div class="vti">🚀 SECRET SEO TRICK to Rank #1 Fast</div><div class="vmeta"><span class="vau">Admin</span><span class="vvw">👁 5 views</span></div></div></div>
+    <div class="vc sr d2"><div class="vt"><div class="vtp" style="background:linear-gradient(135deg,#050518,#0e0835)">💻</div><div class="vov"></div><div class="vpl">▶</div><div class="vpl-tag">YT</div><div class="vdur">22:15</div></div><div class="vb"><div class="lcat ct" style="position:static;display:inline-block;margin-bottom:9px">TOOLS</div><div class="vti">🔍 OSINT Full Beginner Guide 2026</div><div class="vmeta"><span class="vau">Admin</span><span class="vvw">👁 128 views</span></div></div></div>
+    <div class="vc sr d3"><div class="vt"><div class="vtp" style="background:linear-gradient(135deg,#001800,#003800)">🤖</div><div class="vov"></div><div class="vpl">▶</div><div class="vpl-tag">YT</div><div class="vdur">14:08</div></div><div class="vb"><div class="lcat ca" style="position:static;display:inline-block;margin-bottom:9px">AI TOOLS</div><div class="vti">🤖 Use AI to Make Money Online 2026</div><div class="vmeta"><span class="vau">Admin</span><span class="vvw">👁 89 views</span></div></div></div>
+    <div class="vc sr d4"><div class="vt"><div class="vtp" style="background:linear-gradient(135deg,#180000,#380000)">📡</div><div class="vov"></div><div class="vpl">▶</div><div class="vpl-tag">YT</div><div class="vdur">6:33</div></div><div class="vb"><div class="lcat ch" style="position:static;display:inline-block;margin-bottom:9px">VIRAL_HACKS</div><div class="vti">📡 Watch Any Channel Free — No App Needed</div><div class="vmeta"><span class="vau">Admin</span><span class="vvw">👁 244 views</span></div></div></div>
+  </div>
+</section>
+</div>
+
+<!-- PROFILE -->
+<section class="sw" id="profile">
+  <div class="sr"><div class="stag">Your Account</div><h2 class="stitle">USER <em>PROFILE</em></h2></div>
+  <div class="pw">
+    <div class="pcard sr">
+      <div class="par-wrap"><div class="par">V</div></div>
+      <div class="pname">ViralNode</div>
+      <div class="phandle">@viralnode</div>
+      <div class="pbadge">🏆 50 Points Earned</div>
+      <div class="psg">
+        <div class="psb"><div class="psn">50</div><div class="psl">Points</div></div>
+        <div class="psb"><div class="psn">12</div><div class="psl">Shared</div></div>
+        <div class="psb"><div class="psn">7</div><div class="psl">Weeks</div></div>
+        <div class="psb"><div class="psn">#48</div><div class="psl">Rank</div></div>
+      </div>
+    </div>
+    <div class="pr sr d1">
+      <div class="pp">
+        <div class="pp-t">Notifications</div>
+        <div class="nr"><div class="notif-info"><div class="nl">New Viral Weekly Drop</div><div class="ns">Get notified every Monday</div></div><div class="tog on" onclick="this.classList.toggle('on')"><div class="tok"></div></div></div>
+        <div class="nr"><div class="notif-info"><div class="nl">Submitted Link Status</div><div class="ns">When your link is approved</div></div><div class="tog on" onclick="this.classList.toggle('on')"><div class="tok"></div></div></div>
+        <div class="nr"><div class="notif-info"><div class="nl">Weekly Newsletter</div><div class="ns">Top 10 viral links of the week</div></div><div class="tog" onclick="this.classList.toggle('on')"><div class="tok"></div></div></div>
+        <div class="nr"><div class="notif-info"><div class="nl">New App Catalogue Drop</div><div class="ns">When new apps are added</div></div><div class="tog" onclick="this.classList.toggle('on')"><div class="tok"></div></div></div>
+      </div>
+      <div class="pp">
+        <div class="pp-t">Appearance</div>
+        <div class="arow"><button class="tc on" onclick="thm('system',this)">🖥 System</button><button class="tc" onclick="thm('dark',this)">🌑 Force Dark</button><button class="tc" onclick="thm('light',this)">☀️ Force Light</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SUBMIT -->
+<div class="sub-block">
+  <div class="sub-orb"></div>
+  <div class="sub-in">
+    <div class="sr"><div class="stag">Submit Content</div><h2 class="stitle">SHARE WHAT'S <em>VIRAL</em></h2><p class="sdesc">Submit a link and ViralNode earns <strong style="color:var(--green)">+10 points</strong> when it's approved.</p></div>
+    <div class="sf sr d1">
+      <div class="frow"><input type="url" class="si" id="ui" placeholder="Paste link URL here..." style="flex:2"><input type="text" class="si" placeholder="Link title..." style="flex:1"></div>
+      <div class="frow"><select class="ss" style="flex:1"><option>Select category</option><option>🛠 Tools</option><option>🆓 Free Apps</option><option>⚡ Viral Hacks</option><option>🎬 Movies</option><option>🤖 AI Tools</option></select><input type="text" class="si" placeholder="Short description..." style="flex:2"></div>
+      <button class="sbtn" onclick="submitLink()">🔥 Submit for Review</button>
+    </div>
+  </div>
+</div>
+
+<!-- DOWNLOAD -->
+<section class="sw" id="download">
+  <div class="sr"><div class="stag">Mobile App</div><h2 class="stitle">GET THE <em>APP</em></h2><p class="sdesc">Full Viral Hub experience in your pocket — every viral link, video and tool accessible anytime.</p></div>
+  <div class="dlg">
+    <div class="dlc and sr d1"><div class="dlir"><div class="dlicon">🤖</div><span class="dlbadge and">ANDROID</span></div><div class="dlti">Android APK</div><p class="dld">Download the official Viral Hub APK — no Play Store, no restrictions, always the latest version for ViralNode community.</p><div class="dlfs"><div class="dlf"><span class="ck">✓</span>Android 8.0+</div><div class="dlf"><span class="ck">✓</span>Free forever, zero ads</div><div class="dlf"><span class="ck">✓</span>Push notifications</div><div class="dlf"><span class="ck">✓</span>Offline link cache</div><div class="dlf"><span class="ck">✓</span>Dark/Light/System theme</div></div><button class="dlb and" onclick="toast('APK download starting... 📦')">⬇ Download APK v2.4.1</button><div class="vr"><span class="vc2">v2.4.1</span><span class="vc2">24.3 MB</span><span class="vc2">Android 8+</span></div></div>
+    <div class="dlc ios sr d2"><div class="dlir"><div class="dlicon">🍎</div><span class="dlbadge ios">iOS</span></div><div class="dlti">iOS App</div><p class="dld">Install Viral Hub on iPhone & iPad via the App Store — full feature parity, iCloud sync and widget support for ViralNode users.</p><div class="dlfs"><div class="dlf"><span class="ck">✓</span>iOS 15.0+</div><div class="dlf"><span class="ck">✓</span>iPhone, iPad & iPod</div><div class="dlf"><span class="ck">✓</span>iCloud sync</div><div class="dlf"><span class="ck">✓</span>Home Screen widgets</div><div class="dlf"><span class="ck">✓</span>Siri shortcuts</div></div><button class="dlb ios" onclick="toast('Redirecting to App Store... 🍎')">⬇ Download on App Store</button><div class="vr"><span class="vc2">v2.4.1</span><span class="vc2">31.8 MB</span><span class="vc2">iOS 15+</span></div></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="fi">
+    <div class="ft sr">
+      <div>
+        <a href="#" class="nav-logo" style="display:inline-flex"><div class="nav-logo-icon">🔥</div><span class="nav-logo-text">VIRAL<span class="nav-logo-dot">.</span>HUB</span></a>
+        <p class="fbd">The ultimate viral content platform. Curated weekly by the community for the community — made for ViralNode & the world. 🔥</p>
+      </div>
+      <div class="fc"><h5>Explore</h5><a href="#links">Link Cards</a><a href="#catalogue">App Catalogue</a><a href="#videos">Videos</a><a href="#">Blog</a><a href="#">Weekly Drop</a></div>
+      <div class="fc"><h5>Categories</h5><a href="#">Tools</a><a href="#">Free Apps</a><a href="#">Viral Hacks</a><a href="#">Movies</a><a href="#">AI Tools</a></div>
+      <div class="fc"><h5>ViralNode</h5><a href="#download">Android APK</a><a href="#download">iOS App</a><a href="#profile">Profile</a><a href="#">Submit a Link</a><a href="#">Leaderboard</a></div>
+    </div>
+    <div class="fbot">
+      <p>© 2026 Viral Hub — Made for ViralNode &amp; the community 🔥</p>
+      <div class="socs"><a class="soc">✈</a><a class="soc">𝕏</a><a class="soc">📷</a><a class="soc">▶</a><a class="soc">💬</a></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+window.addEventListener('load',()=>setTimeout(()=>document.getElementById('loader').classList.add('out'),1900));
+const cd=document.getElementById('cd'),cr=document.getElementById('cr');
+let mx=0,my=0,rx=0,ry=0;
+if(window.matchMedia('(hover:hover)').matches){
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cd.style.left=mx+'px';cd.style.top=my+'px'});
+  (function m(){rx+=(mx-rx)*.11;ry+=(my-ry)*.11;cr.style.left=rx+'px';cr.style.top=ry+'px';requestAnimationFrame(m)})();
+  document.querySelectorAll('a,button,.lc,.vc,.ac,.icc,.soc,.tog,.tc').forEach(el=>{el.addEventListener('mouseenter',()=>cr.classList.add('grow'));el.addEventListener('mouseleave',()=>cr.classList.remove('grow'))});
+}
+const nav=document.getElementById('nav');
+const hbg=document.getElementById('hbg');
+const drw=document.getElementById('drw');
+window.addEventListener('scroll',()=>{nav.classList.toggle('solid',scrollY>60);reveal();runStats()},{passive:true});
+hbg.addEventListener('click',()=>{hbg.classList.toggle('open');drw.classList.toggle('open')});
+document.querySelectorAll('.drawer-links a').forEach(a=>a.addEventListener('click',()=>{hbg.classList.remove('open');drw.classList.remove('open')}));
+function reveal(){document.querySelectorAll('.sr').forEach(el=>{if(el.getBoundingClientRect().top<window.innerHeight-72)el.classList.add('vis')})}
+reveal();
+let statsRan=false;
+function runStats(){
+  if(statsRan)return;
+  const bar=document.querySelector('.stats-row');
+  if(!bar||bar.getBoundingClientRect().top>window.innerHeight)return;
+  statsRan=true;
+  document.querySelectorAll('[data-to]').forEach(el=>{
+    const t=+el.dataset.to,step=t/70;let c=0;
+    const tm=setInterval(()=>{c=Math.min(c+step,t);const n=Math.floor(c);if(t===100)el.textContent=n+'%';else if(t>=1000)el.textContent=n.toLocaleString()+'+';else el.textContent=n;if(c>=t)clearInterval(tm)},16);
+  });
+}
+let tt;
+function toast(msg){const el=document.getElementById('toast');document.getElementById('tm').textContent=msg;el.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),3200)}
+function cp(btn,url){try{navigator.clipboard.writeText(url)}catch(e){}const o=btn.textContent;btn.textContent='✓ DONE';btn.classList.add('done');setTimeout(()=>{btn.textContent=o;btn.classList.remove('done')},2200);toast('Link copied! 🔗')}
+function filt(cat,btn){document.querySelectorAll('.fb').forEach(b=>b.classList.remove('on'));if(btn)btn.classList.add('on');document.querySelectorAll('#cg>[data-cat]').forEach(c=>{const s=cat==='all'||c.dataset.cat===cat;c.style.transition='opacity .28s,transform .28s';if(s){c.style.display='';setTimeout(()=>{c.style.opacity='1';c.style.transform=''},10)}else{c.style.opacity='0';c.style.transform='scale(.97)';setTimeout(()=>c.style.display='none',300)}});window.scrollTo({top:document.getElementById('links').offsetTop-80,behavior:'smooth'})}
+function submitLink(){const i=document.getElementById('ui');if(i.value.trim()){toast('Submitted! ViralNode earns +10 pts when approved 🎉');i.value=''}else{i.style.borderColor='var(--red)';i.focus();setTimeout(()=>i.style.borderColor='',2000)}}
+function thm(t,btn){document.querySelectorAll('.tc').forEach(b=>b.classList.remove('on'));btn.classList.add('on');toast('Theme: '+t.toUpperCase()+' ✨')}
+document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();toast('Search ⌘K coming soon! 🔍')}});
+</script>
+</body>
+</html>
